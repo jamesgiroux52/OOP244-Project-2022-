@@ -41,7 +41,7 @@ namespace sdds {
         }
         // constructor
         MenuItem(const char* content = nullptr) : m_item{ 0 } {
-            if (content) strcpy(m_item, content, 50);
+            if (content) ut.strcpy(m_item, content, 50);
             else m_item[0] = 0;
         }
         friend class Menu; // Menu owns MenuItem
@@ -65,15 +65,21 @@ namespace sdds {
         // deleted copy constructor and assignment operator
         Menu(const Menu& src) = delete;
         Menu& operator=(const Menu& src) = delete;
-        // members, operators, casts, and other functions
+        // set title
         Menu& operator=(const char* newTitle);
+        // add list items
         Menu& operator<<(const char* item);
-        operator bool() const;
-        operator int() const;
         void add(const char* item);
+        // check validity
+        operator bool() const;
+        // calls run
+        operator int() const;
+        // calls display
         int run() const;
+        // disply
         std::ostream& display(std::ostream& ostr = std::cout) const;
     };
+    // ostream helper
     std::ostream& operator<<(Menu& menu, std::ostream& ostr);
 }
 

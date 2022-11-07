@@ -1,7 +1,7 @@
 /*************************************************************
 //                  Menu Module
 // File    Menu.cpp
-// Version 1.0
+// Version 1.1
 // Date    October 31, 2022
 // Author  James Giroux - jgiroux1@myseneca.ca
 // Description:
@@ -9,16 +9,17 @@
 // --------------------------------------
 // Name            Date            Reason
 // J Giroux       Nov 1, 22       Initial Version 1.0
-//
+// J Giroux       NOv 3, 22       Created getInt() - Utils
 // -----------------------------------------------------------
 // I have done all the coding myself and only copied the
-// code that my professor provided to complete my project
-// milestones.
+// code provided from the course repository to complete my 
+// project milestones.
 // -----------------------------------------------------------
 *************************************************************/
 
 #include <iostream>
 #include "Menu.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -28,10 +29,11 @@ namespace sdds {
         if (title) {
             m_valid = true;
             m_indent = indent;
-            strcpy(m_title, title, 50);
+            // can use Utils - ut because of extern
+            ut.strcpy(m_title, title, 50); 
         } else m_valid = false;
     }
-    // private queries and helpers
+    // private queries and indent helper
     bool Menu::isEmpty() const {
         return m_numItems == 0;
     }
@@ -40,21 +42,9 @@ namespace sdds {
     }
     bool Menu::isValid() const {
         return m_valid;
-    }
-    Menu::operator bool() const {
-        return isValid();
-    }
-    Menu::operator int() const {
-        return run();
-    }
+    }    
     void Menu::indent(int num) const {
         for (int i = 0; i < num; i++) cout << "    ";
-    }
-    void Menu::addItem(const char* item) {
-        if (item && !isFull() && isValid()) {
-            strcpy(m_items[m_numItems].m_item, item, 50);
-            m_numItems++;
-        } else m_valid = false;
     }
     // set menu empty
     void Menu::clear() {
@@ -62,12 +52,26 @@ namespace sdds {
         m_indent = 0;
         m_numItems = 0;
     }
+    // bool and int overloads
+    Menu::operator bool() const {
+        return isValid();
+    }
+    Menu::operator int() const {
+        return run();
+    }
     // set the menu title with = overload
     Menu& Menu::operator=(const char* newTitle) {
         if (newTitle)
-            strcpy(m_title, newTitle, 50);
+            ut.strcpy(m_title, newTitle, 50);
         else m_valid = false;
         return *this;
+    }
+    // private logic for add() and << - to add a list item
+    void Menu::addItem(const char* item) {
+        if (item && !isFull() && isValid()) {
+            ut.strcpy(m_items[m_numItems].m_item, item, 50);
+            m_numItems++;
+        } else m_valid = false;
     }
     // add items to the menu using << overload and add()
     Menu& Menu::operator<<(const char* item) {
@@ -80,20 +84,9 @@ namespace sdds {
     // display menu and get selection from user
     int Menu::run() const {
         int num = 0;
-        bool ok = false;
         display();
-        if (!isEmpty() && isValid()) {
-            do {
-                cin >> num;
-                if (!cin) {
-                    cout << "Invalid Integer, try again: ";
-                    cin.clear();
-                } else if (num < 1 || num > m_numItems)
-                    cout << "Invalid selection, try again: ";
-                else ok = true;
-                cin.ignore(1000, '\n');
-            } while (!ok);
-        }
+        if (!isEmpty() && isValid())
+            num = ut.getInt(1, m_numItems);
         return num;
     }
     // display returning ostream reference
