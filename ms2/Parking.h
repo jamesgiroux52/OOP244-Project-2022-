@@ -24,11 +24,11 @@
 #include "Menu.h"
 
 namespace sdds {
-    // parking class -- HAS Menu(s) - not IS a Menu
     class Parking {
         char* m_path;
+        // parking class -- HAS Menu(s) - not IS a Menu
         Menu m_menu;
-        Menu m_Vmenu;
+        Menu m_Vmenu; // sub - Menu for type of Vehicle
         bool isEmpty();
         void status();
         void park();
