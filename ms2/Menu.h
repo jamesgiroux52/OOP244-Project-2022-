@@ -45,7 +45,7 @@ namespace sdds {
         }
         friend class Menu; // Menu owns MenuItem
     };
-    // Menu class owns MenuItem
+    // Menu class - owns MenuItem
     class Menu {
         char m_title[51];
         int m_indent;
