@@ -29,8 +29,8 @@ namespace sdds {
         // parking class -- HAS Menu(s) - not IS a Menu
         Menu m_menu;
         Menu m_Vmenu; // sub - Menu for type of Vehicle
-        bool isEmpty();
-        void status();
+        bool isEmpty() const;
+        void status() const;
         void park();
         void returnV();
         void list();

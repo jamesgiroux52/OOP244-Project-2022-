@@ -25,9 +25,8 @@ namespace sdds {
     // Parking constructor - if path/filename is valid then allocate
     // memory and load the menus
     Parking::Parking(const char* path, int indent) : m_path(nullptr),
-            m_menu("Parking Menu, select an action:", 0),
-            m_Vmenu("Select type of the vehicle:", 1) 
-    {
+        m_menu("Parking Menu, select an action:", 0),
+        m_Vmenu("Select type of the vehicle:", 1) {
         if (path && path[0] != '\0') {
             int length = ut.strlen(path);
             m_path = new char[length + 1];
@@ -63,10 +62,10 @@ namespace sdds {
         saveData();
         delete[] m_path; // deallocate dynamic memory for path
     }
-    bool Parking::isEmpty() {
+    bool Parking::isEmpty() const {
         return m_path == nullptr;
     }
-    void Parking::status() {
+    void Parking::status() const {
         cout << "****** Valet Parking ******" << endl;
     }
     // park a vehicle using the sub-menu for car or motorcycle

@@ -30,10 +30,8 @@ namespace sdds {
         virtual ~ReadWritable();
         bool isCsv() const;
         void setCsv(bool val);
-        virtual std::istream& read(std::istream& is = 
-            std::cin) = 0;
-        virtual std::ostream& write(std::ostream& os = 
-            std::cout) const = 0;
+        virtual std::istream& read(std::istream& is = std::cin) = 0;
+        virtual std::ostream& write(std::ostream& os = std::cout) const = 0;
     };
     std::ostream& operator<<(std::ostream& os, ReadWritable& R);
     std::istream& operator>>(std::istream& is, ReadWritable& R);

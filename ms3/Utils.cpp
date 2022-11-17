@@ -1,8 +1,8 @@
 /*************************************************************
 //                  Utils Module
 // File    Utils.cpp
-// Version 1.1
-// Date    October 31, 2022
+// Version 1.3
+// Date    October 31, 2022 v1.0
 // Author  Fardad
 // Description:
 // Extra Classes and functions needed in the project
@@ -11,12 +11,22 @@
 // GitHub. I fully understand how it works and is implimented.
 //
 // James Giroux - Nov 3, 2022
-// Added getInt() - used to get a number from istream
+// -- Added getInt() - used to get a number from istream
 //              and returns a number in a valid range.
+// James Giroux - Nov 11, 2022
+// -- Added getYN() - Waits for user input and only accepts
+//              y or Y or n or N
+// James Giroux - Nov 12, 2022
+// -- Added getStr() - recieves a char* and bool to make uppercase
+//              will also work with csv and null terminates the 
+//              cstring
+// -- Added stricmp() - compares two strings and ignores case
+//              returns 0 if strings are the same 1 if not
 // -----------------------------------------------------------
 *************************************************************/
 
 #include <iostream>
+#include <cstring>
 #include "Utils.h"
 
 using namespace std;
@@ -77,5 +87,29 @@ namespace sdds {
             if (!ok) cout << "Invalid response, only (Y)es or (N)o are acceptable, retry: ";
         } while (!ok);
         return res;
+    }
+    int Utils::getStr(char* str, bool upper) {
+        char ch;
+        bool ok = true;
+        int count = 0;
+        do {
+            cin.get(ch);
+            if (ch != ',' && ch != '\n') {
+                str[count] = upper ? toupper(ch) : ch;
+                count++;
+            } else ok = false;
+            str[count] = '\0';
+        } while (ok);
+        return count;
+    }
+    int Utils::stricmp(const char* s1, const char* s2) {
+        bool ok = true;
+        int count = 0;
+        while (s1 && s2 && ok && s1[count] != '\0') {
+            if (toupper(s1[count]) != toupper(s2[count]))
+                ok = false;
+            count++;
+        }
+        return ok ? 0 : 1;
     }
 }

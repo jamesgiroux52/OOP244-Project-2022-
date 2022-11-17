@@ -23,7 +23,7 @@ namespace sdds {
     ReadWritable::ReadWritable() {
         m_comma = false;
     }
-    ReadWritable::~ReadWritable() {}
+    ReadWritable::~ReadWritable() { }
     bool ReadWritable::isCsv() const {
         return m_comma;
     }

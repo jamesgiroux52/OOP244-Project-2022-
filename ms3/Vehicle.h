@@ -26,7 +26,7 @@ namespace sdds {
     class Vehicle : public ReadWritable {
         char m_plate[9]{ '\0' };
         char* m_makeModel = nullptr;
-        unsigned m_spot = 0;
+        int m_spot = 0;
         void setEmpty();
         bool isEmpty() const;
         const char* getLicencePlate() const;
@@ -39,7 +39,7 @@ namespace sdds {
         Vehicle(const Vehicle& V);
         Vehicle& operator=(const Vehicle& V);
         void setMakeModel(const char* mkModel);
-        void setParkingSpot(unsigned spot);
+        void setParkingSpot(int spot);
         bool operator==(const char* plate) const;
         bool operator==(const Vehicle& V) const;
         std::istream& read(std::istream& is = std::cin);

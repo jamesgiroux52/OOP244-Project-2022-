@@ -23,12 +23,15 @@
 namespace sdds {
     class Utils {
     public:
+        // Fardads
         int strlen(const char* str);
         void strcpy(char* des, const char* src, int len = -1);
         int strcmp(const char* s1, const char* s2);
         // my functions - see Utils.cpp for more details
         int getInt(int low, int high);
         bool getYN();
+        int getStr(char* str, bool upper);
+        int stricmp(const char* s1, const char* s2);
     };
     extern Utils ut; // able to use utility members without 
     // withoout instantiating - Only has to
