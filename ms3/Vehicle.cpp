@@ -40,7 +40,7 @@ namespace sdds {
     const char* Vehicle::getMakeModel() const {
         return m_makeModel;
     }
-    unsigned Vehicle::getParkingSpot() const {
+    int Vehicle::getParkingSpot() const {
         return m_spot;
     }
     Vehicle::Vehicle() :ReadWritable() {
@@ -61,7 +61,6 @@ namespace sdds {
     }
     Vehicle::~Vehicle() {
         delete[] m_makeModel;
-        m_makeModel = nullptr;
     }
     Vehicle::Vehicle(const Vehicle& V) {
         *this = V;
@@ -80,7 +79,6 @@ namespace sdds {
         int len = ut.strlen(mkModel);
         if (mkModel && len > 1 && len <= 60) {
             delete[] m_makeModel;
-            m_makeModel = nullptr;
             m_makeModel = new char[len + 1];
             ut.strcpy(m_makeModel, mkModel, ut.strlen(mkModel));
         } else setEmpty();
@@ -100,8 +98,8 @@ namespace sdds {
         return cmp == 0;
     }
     std::istream& Vehicle::read(std::istream& is) {
-        char* plate = new char[100];
-        char* mkModel = new char[100];
+        char* plate = new char[9];
+        char* mkModel = new char[61];
         if (ReadWritable::isCsv()) {
             is >> m_spot;
             is.ignore();
@@ -135,8 +133,6 @@ namespace sdds {
         }
         delete[] plate;
         delete[] mkModel;
-        plate = nullptr;
-        mkModel = nullptr;
         return is;
     }
     std::ostream& Vehicle::write(std::ostream& os) const {
@@ -154,7 +150,6 @@ namespace sdds {
                 os << "Licence Plate: " << getLicencePlate() << endl;
                 os << "Make and Model: " << getMakeModel() << endl;
             }
-
         }
         return os;
     }

@@ -31,7 +31,7 @@ namespace sdds {
         bool isEmpty() const;
         const char* getLicencePlate() const;
         const char* getMakeModel() const;
-        unsigned getParkingSpot() const;
+        int getParkingSpot() const;
     public:
         Vehicle();
         Vehicle(const char* plate, const char* mkModel);

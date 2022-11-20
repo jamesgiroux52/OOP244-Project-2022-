@@ -59,7 +59,7 @@ class Truck : public Vehicle {
 public:
     Truck() {};
     Truck(const char* lp, const char* mm) : Vehicle(lp, mm) {};
-    ostream& writeType(ostream& ostr)const { return ostr; };
+    ostream& writeType(ostream& ostr)const { return ostr << "T,"; };
 };
 
 

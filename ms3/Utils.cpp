@@ -9,14 +9,15 @@
 // -----------------------------------------------------------
 // This was provided in one of the workshops from Fardad on
 // GitHub. I fully understand how it works and is implimented.
+// and have added to it:
 //
-// James Giroux - Nov 3, 2022
+// James Giroux - Nov 3, 2022 - v1.1
 // -- Added getInt() - used to get a number from istream
 //              and returns a number in a valid range.
-// James Giroux - Nov 11, 2022
+// James Giroux - Nov 11, 2022 v1.2
 // -- Added getYN() - Waits for user input and only accepts
 //              y or Y or n or N
-// James Giroux - Nov 12, 2022
+// James Giroux - Nov 12, 20221v1.3
 // -- Added getStr() - recieves a char* and bool to make uppercase
 //              will also work with csv and null terminates the 
 //              cstring
