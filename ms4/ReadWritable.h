@@ -1,5 +1,5 @@
 /*************************************************************
-//                 Menu Module
+//                 ReadWritable Module
 // File    ReadWritable.h
 // Version 1.0
 // Date    November 12, 2022
@@ -23,13 +23,16 @@
 #include <iostream>
 
 namespace sdds {
+    // abstract base class - not an interface bc it has implemented 
+    //      functions isCsv() & setCsv()
     class ReadWritable {
-        bool m_comma;
+        bool m_comma; // user input || read from csv file
     public:
         ReadWritable();
         virtual ~ReadWritable();
         bool isCsv() const;
         void setCsv(bool val);
+        // pure virtual functions for I/O
         virtual std::istream& read(std::istream& is = std::cin) = 0;
         virtual std::ostream& write(std::ostream& os = std::cout) const = 0;
     };

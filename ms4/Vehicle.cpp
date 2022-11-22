@@ -1,5 +1,5 @@
 /*************************************************************
-//                 Menu Module
+//                 Vehicle Module
 // File    Vehicle.cpp
 // Version 1.0
 // Date    November 12, 2022
@@ -25,6 +25,7 @@
 using namespace std;
 
 namespace sdds {
+    // Set the vehicle to a safe empty state
     void Vehicle::setEmpty() {
         delete[] m_makeModel;
         m_makeModel = nullptr;
@@ -44,7 +45,7 @@ namespace sdds {
     int Vehicle::getParkingSpot() const {
         return m_spot;
     }
-    // constructors
+    // constructors & destructor
     Vehicle::Vehicle() :ReadWritable() { }
     Vehicle::Vehicle(const char* plate, const char* mkModel) 
         :ReadWritable() {
@@ -61,13 +62,12 @@ namespace sdds {
     Vehicle::~Vehicle() {
         delete[] m_makeModel;
     }
-    Vehicle::Vehicle(const Vehicle& V) {
-        *this = V;
-    }
+    // copy constructor/assignment - ensures against self copy and
+    //  that we keep track of the csv boolean
     Vehicle& Vehicle::operator=(const Vehicle& V) {
         if (this != &V) {
             m_spot = V.m_spot;
-            Vehicle::setCsv(V.isCsv());
+            Vehicle::setCsv(V.isCsv()); // csv is remembered
             ut.strcpy(m_plate, V.m_plate, ut.strlen(V.m_plate));
             if (V.m_makeModel)
                 setMakeModel(V.m_makeModel);
@@ -75,6 +75,10 @@ namespace sdds {
         }
         return *this;
     }
+    Vehicle::Vehicle(const Vehicle& V) {
+        *this = V;
+    }
+    // sets the dynamic make ond model
     void Vehicle::setMakeModel(const char* mkModel) {
         int len = ut.strlen(mkModel);
         if (mkModel && len > 1 && len <= 60) {
@@ -83,12 +87,13 @@ namespace sdds {
             ut.strcpy(m_makeModel, mkModel, ut.strlen(mkModel));
         } else setEmpty();
     }
+    // sets a vaild parking spot
     void Vehicle::setParkingSpot(int spot) {
         if (spot >= 0)
             m_spot = spot;
         else setEmpty();
     }
-
+    // == overloads to compare plates (case insensitive)
     bool Vehicle::operator==(const char* plate) const {
         int cmp = ut.stricmp(m_plate, plate);
         return cmp == 0;
@@ -97,23 +102,24 @@ namespace sdds {
         int cmp = ut.stricmp(m_plate, V.m_plate);
         return cmp == 0;
     }
+    // read implimentation of base pure virtual
+    // gets information about the vehicle
     std::istream& Vehicle::read(std::istream& is) {
         char* plate = new char[9];
         char* mkModel = new char[61];
-        if (ReadWritable::isCsv()) {
+        if (ReadWritable::isCsv()) { // check if scv or not
             is >> m_spot;
             is.ignore();
             ut.getStr(plate, true);
             ut.strcpy(m_plate, plate, ut.strlen(plate));
             ut.getStr(mkModel, false);
             setMakeModel(mkModel);
-            //is.ignore(1000, '\n');
         } else {
             bool ok = false;
-            cout << "Enter Licence Plate Number: ";
+            cout << "Enter License Plate Number: ";
             do {
                 if (ut.getStr(plate, true) >= 8) {
-                    cout << "Invalid Licence Plate, try again: ";
+                    cout << "Invalid License Plate, try again: ";
                 } else {
                     ok = true;
                     ut.strcpy(m_plate, plate);
@@ -136,20 +142,22 @@ namespace sdds {
         delete[] mkModel;
         return is;
     }
+    // write implimentation of base pure virtual
+    // displays information about the Vehicle
     std::ostream& Vehicle::write(std::ostream& os) const {
         if (isEmpty())
             os << "Invalid Vehicle Object" << endl;
         else {
             writeType(os);
-            if (ReadWritable::isCsv()) {
+            if (ReadWritable::isCsv()) { // check if csv
                 os << getParkingSpot() << "," << getLicencePlate()
                     << "," << getMakeModel() << ",";
             } else {
                 os << "Parking Spot Number: ";
                 if (getParkingSpot() == 0) os << "N/A" << endl;
                 else os << m_spot << endl;
-                os << "Licence Plate: " << getLicencePlate() << endl;
-                os << "Make and Model: " << getMakeModel() << endl;
+                os << "License Plate: " << getLicencePlate() << endl;
+                os << "Make and Model: " << getMakeModel();
             }
         }
         return os;

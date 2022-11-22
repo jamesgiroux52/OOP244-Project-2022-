@@ -28,31 +28,35 @@
 using namespace std;
 
 namespace sdds {
-    Car::Car() : Vehicle() { }
+    Car::Car() : Vehicle() { } // default constructor
+    // Constructs a Car but sets it invalid if the values passed are not vaild
     Car::Car(const char* plate, const char* mkModel) : Vehicle(plate,mkModel) {
         if (plate && mkModel) {
             int plateLen = ut.strlen(plate);
             int mkModLen = ut.strlen(mkModel);
-            if (plateLen > 0 && mkModLen > 1 && plateLen <= 8)
+            if (plateLen > 0 && plateLen <= 8 && mkModLen > 1 && mkModLen <= 60)
                 m_valid = true;
         } else m_valid = false;
     }
+    // copy constructor and assignment operator
     Car::Car(const Car& C) {
         *this = C;
     }
+    // makes sure to retain the vehicle information
     Car& Car::operator=(const Car& C) {
         if (this != &C) {
-            Vehicle::operator=(C);
+            Vehicle::operator=(C); // here
             m_valid = true;
         } else m_valid = false;
         return *this;
     }
-    Car::~Car() {  } // shuldnt need to do anything here bc parents are virtual
+    Car::~Car() {  } // empty - no dynamic members and parents are virtual
     std::ostream& Car::writeType(std::ostream& os) const {
         if (Vehicle::ReadWritable::isCsv()) os << "C,";
         else os << "Vehicle type: Car" << endl;
         return os;
     }
+    // overrides and upgrades Vehicle read if a wash is wanted
     std::istream& Car::read(std::istream& is) {
         //bool wash = false;
         if (Vehicle::ReadWritable::isCsv()) {
@@ -60,7 +64,7 @@ namespace sdds {
             m_wash = ut.getYN();
             m_valid = true;
         } else {
-            cout << "Car information entry" << endl;
+            cout << endl << "Car information entry" << endl;
             Vehicle::read();
             cout << "Carwash while parked? (Y)es/(N)o: ";
             m_wash =  ut.getYN();
@@ -68,13 +72,14 @@ namespace sdds {
         }
         return is;
     }
+    // overrides Vehicle write to display either on screen or to a file
     std::ostream& Car::write(std::ostream& os) const {
         if (m_valid) {
             Vehicle::write();
             if (Vehicle::ReadWritable::isCsv())
                 os << m_wash;
             else
-                m_wash ? os << "With Carwash" : os << "Without Carwash"; os << endl;
+                m_wash ? os << endl << "With Carwash" : os << endl << "Without Carwash"; os << endl;
         } else {
             os << "Invalid Car Object" << endl;
         }

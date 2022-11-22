@@ -1,5 +1,5 @@
 /*************************************************************
-//                 Menu Module
+//                 Vehicle Module
 // File    Vehicle.h
 // Version 1.0
 // Date    November 12, 2022
@@ -23,6 +23,8 @@
 #include "ReadWritable.h"
 
 namespace sdds {
+    // abstract base class Vehicle bc writeType() is pure virtual
+    // to be impemented in Car and Motorcycle classes
     class Vehicle : public ReadWritable {
         char m_plate[9]{ '\0' };
         char* m_makeModel = nullptr;
@@ -38,8 +40,8 @@ namespace sdds {
         Vehicle();
         Vehicle(const char* plate, const char* mkModel);
         virtual ~Vehicle();
-        Vehicle(const Vehicle& V);
         Vehicle& operator=(const Vehicle& V);
+        Vehicle(const Vehicle& V);
         void setParkingSpot(int spot);
         bool operator==(const char* plate) const;
         bool operator==(const Vehicle& V) const;

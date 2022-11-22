@@ -35,7 +35,7 @@ namespace sdds {
         MenuItem& operator=(const MenuItem&) = delete;
         // display
         std::ostream& display(std::ostream& ostr = std::cout) const {
-            if (m_item) ostr << m_item << std::endl;
+            if (m_item[0] != '\0') ostr << m_item << std::endl;
             return ostr;
         }
         // constructor

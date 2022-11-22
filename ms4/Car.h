@@ -27,6 +27,7 @@
 #include "Vehicle.h"
 
 namespace sdds {
+    // concrete car class
     class Car : public Vehicle {
         bool m_wash = false;
         bool m_valid = false;
