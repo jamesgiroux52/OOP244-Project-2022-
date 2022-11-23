@@ -1,7 +1,7 @@
 import pyautogui as gui
 import time
 
-datafile = 'inputs.txt'
+datafile = 'ms53.txt'
 
 # pause 3 seconds while you set focus to the terminal/console window:
 # print('Click on the terminal/console window where the automated keyboard data needs to be entered...')

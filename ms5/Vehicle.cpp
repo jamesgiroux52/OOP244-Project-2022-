@@ -83,6 +83,7 @@ namespace sdds {
         int len = ut.strlen(mkModel);
         if (mkModel && len > 1 && len <= 60) {
             delete[] m_makeModel;
+            m_makeModel = nullptr;
             m_makeModel = ut.alcpy(mkModel);
         } else setEmpty();
     }

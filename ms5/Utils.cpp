@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <ctype.h>
 #include "Utils.h"
 
 using namespace std;
@@ -121,10 +122,11 @@ namespace sdds {
         } else ok = false;
         return ok ? 0 : 1;
     }
-    std::ostream& Utils::toUpper(const char* str, std::ostream& os) {
+    ostream& Utils::toUpper(const char* str, ostream& os) {
         int len = ut.strlen(str);
         for (int i = 0; i < len; i++) {
-            os << char( toupper(str[i]));
+            char c = str[i] - 32;
+            os << c;
         }
         return os;
     }   
@@ -161,8 +163,6 @@ namespace sdds {
         strcpy(temp, toRet);
         delete[] toRet;
         toRet = temp;
-        int i = strlen(toRet);
-        toRet[i] = '\0';
         return toRet;
     }
 }

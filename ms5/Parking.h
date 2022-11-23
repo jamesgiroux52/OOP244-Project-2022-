@@ -37,6 +37,7 @@ namespace sdds {
         bool isEmpty() const;
         void status() const;
         void park();
+        void parkVehicle(Vehicle* V, int loc);
         void returnV();
         void list();
         void find();

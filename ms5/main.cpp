@@ -1,13 +1,3 @@
-/* ------------------------------------------------------
-Final Project Milestone 5
-Module: Car and Motorcycle
-Filename: main.cpp
-Version 1.0
-Author	Fardad Soleimanloo
-Revision History
------------------------------------------------------------
-Date      Reason
------------------------------------------------------------*/
 #include <fstream>
 #include <iostream>
 #include <ctype.h>
