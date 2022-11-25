@@ -78,11 +78,12 @@ namespace sdds {
     bool Utils::getYN(istream& is) {
         char ch;
         bool ok = false;
-        bool res;
+        bool res = false;
         do {
             is >> ch;
             if (!is) {
                 is.clear();
+                ok = true;
             } else if (ch == 'Y' || ch == 'y' || ch == 'N' || ch == 'n'
                 || ch == '0' || ch == '1') {
                 if (ch == 'Y' || ch == 'y' || ch == '1') 
@@ -90,8 +91,8 @@ namespace sdds {
                 else 
                     res = false;
                 ok = true;
+                is.ignore(1000, '\n');
             }
-            is.ignore(1000, '\n');
             if (!ok) cout << "Invalid response, only (Y)es or (N)o are acceptable, retry: ";
         } while (!ok);
         return res;
@@ -102,7 +103,7 @@ namespace sdds {
         int count = 0;
         do {
             is.get(ch);
-            if (ch && ch != ',' && ch != '\n') {
+            if (is && ch && ch != ',' && ch != '\n') {
                 str[count] = upper ? toupper(ch) : ch;
                 count++;
             } else ok = false;
@@ -133,8 +134,8 @@ namespace sdds {
     char* Utils::alcpy(const char* cstr) {
         char* newStr{};
         if (cstr) {
-            newStr = new char[strlen(cstr) + 1];
-            strcpy(newStr, cstr);
+            newStr = new char[ut.strlen(cstr) + 1];
+            ut.strcpy(newStr, cstr);
         }
         return newStr;
     }

@@ -58,7 +58,6 @@ namespace sdds {
     }
     // overrides and upgrades Vehicle read if a wash is wanted
     std::istream& Car::read(std::istream& is) {
-        //bool wash = false;
         if (Vehicle::ReadWritable::isCsv()) {
             Vehicle::read(is);
             m_wash = ut.getYN(is);

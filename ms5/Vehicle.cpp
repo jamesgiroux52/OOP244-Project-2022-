@@ -46,21 +46,21 @@ namespace sdds {
         return m_spot;
     }
     // constructors & destructor
-    Vehicle::Vehicle() :ReadWritable() { }
-    Vehicle::Vehicle(const char* plate, const char* mkModel) 
+    Vehicle::Vehicle() :ReadWritable() {}
+    Vehicle::Vehicle(const char* plate, const char* mkModel)
         :ReadWritable() {
         if (plate && mkModel) {
             int plateLen = ut.strlen(plate);
             int mkModLen = ut.strlen(mkModel);
             if (plateLen > 0 && mkModLen > 1 && plateLen <= 8) {
-                ut.strcpy(m_plate, plate, 8);
+                ut.strcpy(m_plate, plate);
                 setMakeModel(mkModel);
                 m_spot = 0;
             } else setEmpty();
         } else setEmpty();
     }
     Vehicle::~Vehicle() {
-        delete[] m_makeModel;
+        setEmpty();
     }
     // copy constructor/assignment - ensures against self copy and
     //  that we keep track of the csv boolean
@@ -105,16 +105,17 @@ namespace sdds {
     // read implimentation of base pure virtual
     // gets information about the vehicle
     std::istream& Vehicle::read(std::istream& is) {
-        char* plate = new char[9];
-        char* mkModel = new char[61];
-        if (ReadWritable::isCsv()) { // check if scv or not
+        char plate[9];
+        char mkModel[61];
+        if (ReadWritable::isCsv()) {
             is >> m_spot;
-            is.ignore(); // ,
-            // use utils getDyn Str
-            ut.getStr(plate, true, is); // ****here***
-            ut.strcpy(m_plate, plate, ut.strlen(plate));
-            ut.getStr(mkModel, false, is);
-            setMakeModel(mkModel);
+            if (m_spot > 0) {
+                is.ignore(); // ,
+                ut.getStr(plate, true, is);
+                ut.strcpy(m_plate, plate, ut.strlen(plate));
+                ut.getStr(mkModel, false, is);
+                setMakeModel(mkModel);
+            } else setEmpty();
         } else {
             bool ok = false;
             cout << "Enter Licence Plate Number: ";
@@ -139,8 +140,6 @@ namespace sdds {
             } while (!ok);
             m_spot = 0;
         }
-        delete[] plate;
-        delete[] mkModel;
         return is;
     }
     // write implimentation of base pure virtual

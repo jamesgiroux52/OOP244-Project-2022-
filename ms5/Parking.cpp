@@ -65,20 +65,14 @@ namespace sdds {
         }
         return ret;
     }
-    Parking::~Parking() {
-        saveData();
-        delete[] m_path;
-        for (int i = 0; i < m_numParked; i++)
-            if (m_vehicles[i]) delete m_vehicles[i];
-    }
     bool Parking::isEmpty() const {
         return m_path == nullptr;
     }
     void Parking::status() const {
         cout << "****** Valet Parking ******" << endl;
-        cout << "*****  Available spots:  ";
+        cout << "*****  Available spots: ";
         cout.setf(ios::left);
-        cout << setw(4) << m_numSpots - m_numParked << "*****" << endl;
+        cout << setw(5) << m_numSpots - m_numParked << "*****" << endl;
         cout.unsetf(ios::left);
     }
     // created to eliminate duplicate logic from park()
@@ -144,7 +138,7 @@ namespace sdds {
     // show vehicles in the lot
     void Parking::list() {
         cout << "*** List of parked vehicles ***" << endl;
-        for (int i = 0; i < m_numSpots; i++) 
+        for (int i = 0; i < m_numSpots; i++)
             if (m_vehicles[i]) {
                 m_vehicles[i]->setCsv(false);
                 m_vehicles[i]->write(cout) << endl;
@@ -163,7 +157,7 @@ namespace sdds {
             plate = ut.getDynCstr();
             len = ut.strlen(plate);
         }
-        for (int i = 0; i < m_numSpots; i++) 
+        for (int i = 0; i < m_numSpots; i++)
             if (m_vehicles[i])
                 if (ut.stricmp(m_vehicles[i]->getLicencePlate(), plate) == 0)
                     locFound = i;
@@ -192,7 +186,7 @@ namespace sdds {
             if (ut.getYN(cin)) {
                 res = true;
                 cout << "Closing Parking" << endl;
-                for (int i = 0; i < m_numSpots; i++) 
+                for (int i = 0; i < m_numSpots; i++)
                     if (m_vehicles[i]) {
                         cout << endl << "Towing request" <<
                             endl << "*********************" << endl;
@@ -202,6 +196,7 @@ namespace sdds {
                         m_vehicles[i] = nullptr;
                     }
             }
+            saveData();
         }
         return res;
     }
@@ -217,34 +212,41 @@ namespace sdds {
         }
         return res;
     }
+    Parking::~Parking() {
+        delete[] m_path;
+        for (int i = 0; i < m_numSpots; i++)
+            if (m_vehicles[i]) delete m_vehicles[i];
+    }
     // loading and saving data to a file
     bool Parking::loadData() {
+        bool res = true;
         bool ok = true;
         char ch;
         Vehicle* V{};
         ifstream fin(m_path);
-        while (fin.get(ch) && !fin.eof()) {
-            fin.ignore(); // ignore , after writeType
-            if (ch == 'C' || ch == 'c') V = new Car;
-            else if (ch == 'M' || ch == 'm') V = new Motorcycle;
-            else ok = false;
-            if (ok) {
-                V->setCsv(true);
-                V->read(fin);
-                m_vehicles[V->getParkingSpot() - 1] = V;
-                m_numParked++;
+        while (ok && m_numParked < m_numSpots) {
+            fin.get(ch);
+            if (!fin.eof()) {
                 V = nullptr;
-                delete V;
-            }
+                if (ch == 'C' || ch == 'c') V = new Car;
+                else if (ch == 'M' || ch == 'm') V = new Motorcycle;
+                else res = false;
+                fin.ignore(); // ignore , after writeType
+                if (res) {
+                    V->setCsv(true);
+                    V->read(fin);
+                    m_vehicles[V->getParkingSpot() - 1] = V;
+                    m_numParked++;
+                }
+            } else ok = false;
         }
-        delete V;
         fin.close();
-        return ok;
+        return res;
     }
     void Parking::saveData() {
         ofstream fout(m_path);
         if (fout) {
-            for (int i = 0; i <= m_numSpots; i++)
+            for (int i = 0; i < m_numSpots; i++)
                 if (m_vehicles[i]) {
                     m_vehicles[i]->setCsv(true);
                     fout << *m_vehicles[i] << endl;
