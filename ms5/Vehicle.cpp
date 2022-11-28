@@ -60,7 +60,7 @@ namespace sdds {
         } else setEmpty();
     }
     Vehicle::~Vehicle() {
-        setEmpty();
+        delete[] m_makeModel;
     }
     // copy constructor/assignment - ensures against self copy and
     //  that we keep track of the csv boolean
@@ -105,8 +105,8 @@ namespace sdds {
     // read implimentation of base pure virtual
     // gets information about the vehicle
     std::istream& Vehicle::read(std::istream& is) {
-        char plate[9];
-        char mkModel[61];
+        char* plate = new char[128] {'\0'};
+        char* mkModel = new char[128] {'\0'};
         if (ReadWritable::isCsv()) {
             is >> m_spot;
             if (m_spot > 0) {
@@ -120,7 +120,7 @@ namespace sdds {
             bool ok = false;
             cout << "Enter Licence Plate Number: ";
             do {
-                if (ut.getStr(plate, true, is) >= 8) {
+                if (ut.getStr(plate, true, is) > 8) {
                     cout << "Invalid Licence Plate, try again: ";
                 } else {
                     ok = true;
@@ -140,6 +140,8 @@ namespace sdds {
             } while (!ok);
             m_spot = 0;
         }
+        delete[] plate;
+        delete[] mkModel;
         return is;
     }
     // write implimentation of base pure virtual

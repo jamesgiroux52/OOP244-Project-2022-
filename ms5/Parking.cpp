@@ -10,6 +10,7 @@
 // Name            Date            Reason
 // J Giroux       Nov 7, 22       Initial Version 1.0
 // J Giroux       Nov 20, 22      Added functionality
+// J Giroux       Nov 25, 22      Fixed Memory leak in destructor
 // -----------------------------------------------------------
 // I have done all the coding myself and only copied the
 // code provided from the course repository to complete my
@@ -92,48 +93,67 @@ namespace sdds {
         for (int i = 0; i < m_numSpots && spotFound == -1; i++)
             if (!m_vehicles[i])
                 spotFound = i;
-        selection = m_Vmenu.run();
-        if (spotFound >= 0 && spotFound <= m_numSpots) {
+        if (spotFound >= 0) {
+            selection = m_Vmenu.run();
             if (selection == 1) {
                 m_vehicles[spotFound] = new Car;
                 parkVehicle(m_vehicles[spotFound], spotFound);
             } else if (selection == 2) {
                 m_vehicles[spotFound] = new Motorcycle;
                 parkVehicle(m_vehicles[spotFound], spotFound);
-            } else cout << "Parking cancelled" << endl;
+            } else cout << "Parking cancelled";
             cout << endl;
-        } else cout << "Parking Full!!" << endl << endl;
-
+        } else cout << "Parking is full" << endl << endl;
+        pause();
     }
-    // remove a veichle from the lot
-    void Parking::returnV() {
-        const char* plate;
-        int locFound = -1;
-        cout << "Return Vehicle" << endl;
+    // based on a licence plate - find a parked vehicle
+    // return -1 if not found and the index if found
+    // display if found using the correct heading
+    int Parking::findVehicle(const char* heading) {
+        const char* plate{};
+        int loc = -1;
         plate = ut.getDynCstr("Enter Licence Plate Number: ");
         int len = ut.strlen(plate);
         while (len < 1 || len > 8) {
             plate = ut.getDynCstr("Invalid Licence Plate, try again: ");
             len = ut.strlen(plate);
         }
-        for (int i = 0; i < m_numSpots; i++)
+        for (int i = 0; i < m_numSpots && loc == -1; i++)
             if (m_vehicles[i])
-                if (ut.stricmp(m_vehicles[i]->getLicencePlate(), plate) == 0)
-                    locFound = i;
-        if (locFound == -1) {
+                if (m_vehicles[i]->operator==(plate))
+                    loc = i;
+        if (loc == -1) {
             cout << endl << "Licence plate ";
             ut.toUpper(plate, cout);
             cout << " Not found" << endl << endl;
         } else {
-            cout << endl << "Returning:" << endl;
-            m_vehicles[locFound]->setCsv(false);
-            m_vehicles[locFound]->write();
-            cout << "\n\n";
-            delete m_vehicles[locFound];
-            m_vehicles[locFound] = nullptr;
-            m_numParked--;
+            cout << endl << heading << endl;
+            m_vehicles[loc]->setCsv(false);
+            m_vehicles[loc]->write();
+            cout << endl << endl;
         }
         delete[] plate;
+        pause();
+        return loc;
+    }
+    void Parking::pause() {
+        cout << "Press <ENTER> to continue....";
+        cin.ignore(1000, '\n');
+    }
+    // remove a veichle from the lot
+    void Parking::returnV() {
+        cout << "Return Vehicle" << endl;
+        int index = findVehicle("Returning:");
+        if (index != -1) {
+            delete m_vehicles[index];
+            m_vehicles[index] = nullptr;
+            m_numParked--;
+        }
+    }
+    // find a specific vehicle
+    void Parking::find() {
+        cout << "Vehicle Search" << endl;
+        findVehicle("Vehicle found:");
     }
     // show vehicles in the lot
     void Parking::list() {
@@ -144,34 +164,7 @@ namespace sdds {
                 m_vehicles[i]->write(cout) << endl;
                 cout << "-------------------------------" << endl;
             }
-    }
-    // find a specific vehicle
-    void Parking::find() {
-        const char* plate;
-        int locFound = -1;
-        cout << "Vehicle Search" << endl;
-        plate = ut.getDynCstr("Enter Licence Plate Number: ");
-        int len = ut.strlen(plate);
-        while (len < 1 || len > 8) {
-            cout << "Invalid Licence Plate, try again: ";
-            plate = ut.getDynCstr();
-            len = ut.strlen(plate);
-        }
-        for (int i = 0; i < m_numSpots; i++)
-            if (m_vehicles[i])
-                if (ut.stricmp(m_vehicles[i]->getLicencePlate(), plate) == 0)
-                    locFound = i;
-        if (locFound == -1) {
-            cout << endl << "Licence plate ";
-            ut.toUpper(plate, cout);
-            cout << " Not found" << endl << endl;
-        } else {
-            cout << endl << "Vehicle found:" << endl;
-            m_vehicles[locFound]->setCsv(false);
-            m_vehicles[locFound]->write();
-            cout << "\n\n";
-        }
-        delete[] plate;
+        pause();
     }
     // close for the day and tow all vehicles from lot
     bool Parking::close() {
@@ -212,12 +205,13 @@ namespace sdds {
         }
         return res;
     }
+    // make sure there is no memory leaks
     Parking::~Parking() {
         delete[] m_path;
         for (int i = 0; i < m_numSpots; i++)
-            if (m_vehicles[i]) delete m_vehicles[i];
+            delete m_vehicles[i];
     }
-    // loading and saving data to a file
+    // loading data from the file
     bool Parking::loadData() {
         bool res = true;
         bool ok = true;
@@ -243,6 +237,7 @@ namespace sdds {
         fin.close();
         return res;
     }
+    // saving the data back to the file
     void Parking::saveData() {
         ofstream fout(m_path);
         if (fout) {

@@ -134,7 +134,7 @@
     <ClCompile Include="ReadWritable.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vehicle.cpp" />
-    <ClCompile Include="Z:\Users\jamesmac\seneca\4\OOP244\Project\ms5\ParkingAppTester_prof.cpp" />
+    <ClCompile Include="Z:\Users\jamesmac\seneca\4\OOP244\Project\ms5\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />
@@ -144,6 +144,9 @@
     <ClInclude Include="ReadWritable.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vehicle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="reflect.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

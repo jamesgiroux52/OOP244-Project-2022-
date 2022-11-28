@@ -106,7 +106,9 @@ namespace sdds {
             if (is && ch && ch != ',' && ch != '\n') {
                 str[count] = upper ? toupper(ch) : ch;
                 count++;
-            } else ok = false;
+            } else {
+                ok = false; is.clear();
+            }
         } while (ok);
         str[count] = '\0';
         return count;
@@ -125,8 +127,12 @@ namespace sdds {
     }
     ostream& Utils::toUpper(const char* str, ostream& os) {
         int len = ut.strlen(str);
+        char c;
         for (int i = 0; i < len; i++) {
-            char c = str[i] - 32;
+            // only uppercase characters that are lowercase letters
+            // a == 97 && z == 122 -- capitalize by subtracting 32
+            if (str[i] >= 97 && str[i] <= 122) c = str[i] - 32;
+            else c = str[i];
             os << c;
         }
         return os;

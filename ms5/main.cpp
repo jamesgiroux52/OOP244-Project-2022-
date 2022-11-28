@@ -5,10 +5,11 @@
 using namespace std;
 using namespace sdds;
 void runParking();
-void Datafile(bool restore = false);
+void Datafile(bool restore = true);
 int main() {
    runParking();
    Datafile(true);
+  
    return 0;
 }
 void runParking() {
