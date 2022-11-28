@@ -98,20 +98,21 @@ namespace sdds {
         return cmp == 0;
     }
     std::istream& Vehicle::read(std::istream& is) {
-        char* plate = new char[9];
-        char* mkModel = new char[61];
-        if (ReadWritable::isCsv()) {
+        char plate[9]{};
+        char mkModel[61]{};
+        if (ReadWritable::isCsv()) { // check if scv or not
             is >> m_spot;
-            is.ignore();
-            ut.getStr(plate, true);
+            is.ignore(); // ,
+            // use utils getDyn Str
+            ut.getStr(plate, true, is);
             ut.strcpy(m_plate, plate, ut.strlen(plate));
-            ut.getStr(mkModel, false);
+            ut.getStr(mkModel, false, is);
             setMakeModel(mkModel);
         } else {
             bool ok = false;
             cout << "Enter Licence Plate Number: ";
             do {
-                if (ut.getStr(plate, true) >= 8) {
+                if (ut.getStr(plate, true, is) >= 8) {
                     cout << "Invalid Licence Plate, try again: ";
                 } else {
                     ok = true;
@@ -121,7 +122,7 @@ namespace sdds {
             ok = false;
             cout << "Enter Make and Model: ";
             do {
-                int len = ut.getStr(mkModel, false);
+                int len = ut.getStr(mkModel, false, is);
                 if (len > 60 || len < 2) {
                     cout << "Invalid Make and model, try again: ";
                 } else {
@@ -131,8 +132,6 @@ namespace sdds {
             } while (!ok);
             m_spot = 0;
         }
-        delete[] plate;
-        delete[] mkModel;
         return is;
     }
     std::ostream& Vehicle::write(std::ostream& os) const {
