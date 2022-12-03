@@ -6,7 +6,6 @@
 *.db
 Debug/
 ipch/
-ms3*
 x64/*.*
 .vs
 .DS_Store
