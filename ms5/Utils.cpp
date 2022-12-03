@@ -84,16 +84,17 @@ namespace sdds {
             if (!is) {
                 is.clear();
                 ok = true;
-            } else if (ch == 'Y' || ch == 'y' || ch == 'N' || ch == 'n'
-                || ch == '0' || ch == '1') {
-                if (ch == 'Y' || ch == 'y' || ch == '1') 
+            } else if (is.peek() == '\n') {
+                if (ch == 'Y' || ch == 'y' || ch == '1') {
                     res = true;
-                else 
+                    ok = true;
+                } else if (ch == 'N' || ch == 'n' || ch == '0') {
                     res = false;
-                ok = true;
-                is.ignore(1000, '\n');
-            }
-            if (!ok) cout << "Invalid response, only (Y)es or (N)o are acceptable, retry: ";
+                    ok = true;
+                }
+            } else if (is.eof()) ok = true;
+            else  cout << "Invalid response, only (Y)es or (N)o are acceptable, retry: ";
+            is.ignore(10000, '\n');
         } while (!ok);
         return res;
     }
@@ -110,8 +111,41 @@ namespace sdds {
                 ok = false; is.clear();
             }
         } while (ok);
-        str[count] = '\0';
-        return count;
+        string temp(str);
+        temp = ut.reduce(temp);
+        ut.strcpy(str, temp.c_str());
+        return ut.strlen(str);
+    }
+    std::string Utils::trim(const std::string& str,
+        const std::string& whitespace)
+    {
+        const auto strBegin = str.find_first_not_of(whitespace);
+        if (strBegin == std::string::npos)
+            return ""; // no content
+        const auto strEnd = str.find_last_not_of(whitespace);
+        const auto strRange = strEnd - strBegin + 1;
+        return str.substr(strBegin, strRange);
+    }
+    std::string Utils::reduce(const std::string& str,
+        const std::string& fill, const std::string& whitespace)
+    {
+        // trim first
+        auto result = ut.trim(str, whitespace);
+
+        // replace sub ranges
+        auto beginSpace = result.find_first_of(whitespace);
+        while (beginSpace != std::string::npos)
+        {
+            const auto endSpace = result.find_first_not_of(whitespace, beginSpace);
+            const auto range = endSpace - beginSpace;
+
+            result.replace(beginSpace, range, fill);
+
+            const auto newStart = beginSpace + fill.length();
+            beginSpace = result.find_first_of(whitespace, newStart);
+        }
+
+        return result;
     }
     int Utils::stricmp(const char* s1, const char* s2) {
         bool ok = true;
@@ -136,7 +170,7 @@ namespace sdds {
             os << c;
         }
         return os;
-    }   
+    }
     char* Utils::alcpy(const char* cstr) {
         char* newStr{};
         if (cstr) {

@@ -55,7 +55,7 @@ namespace sdds {
         Parking(const Parking& P) = delete;
         Parking& operator=(const Parking& P) = delete;
         int run();
-        // making distructor virtual ensures that if Parking inherited a base class 
+        // making distructor virtual ensures that if Parking is inherited
         // and our main() was using pointers or references to a Parking obj, 
         // the base class destructors would still get called and we won't have 
         // memory leaks

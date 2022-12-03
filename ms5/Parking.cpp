@@ -11,12 +11,16 @@
 // J Giroux       Nov 7, 22       Initial Version 1.0
 // J Giroux       Nov 20, 22      Added functionality
 // J Giroux       Nov 25, 22      Fixed Memory leak in destructor
+// J Giroux       Dec 1, 22       Minor refinements
 // -----------------------------------------------------------
 // I have done all the coding myself and only copied the
 // code provided from the course repository to complete my
 // project milestones.
 // -----------------------------------------------------------
 *************************************************************/
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 #include <iostream>
 #include <iomanip>
@@ -26,6 +30,21 @@
 #include "Car.h"
 #include "Motorcycle.h"
 
+void clrscr() {
+#ifdef _WIN32
+    COORD tl = { 0,0 };
+    CONSOLE_SCREEN_BUFFER_INFO s;
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleScreenBufferInfo(console, &s);
+    DWORD written, cells = s.dwSize.X * s.dwSize.Y;
+    FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
+    FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
+    SetConsoleCursorPosition(console, tl);
+#else
+    system("clear");
+#endif
+}
+
 using namespace std;
 
 namespace sdds {
@@ -34,7 +53,7 @@ namespace sdds {
     Parking::Parking(const char* path, int numSpots) : m_path(nullptr),
         m_menu("Parking Menu, select an action:", 0),
         m_Vmenu("Select type of the vehicle:", 1) {
-        if (path && path[0] != '\0' && numSpots <= m_numSpots && numSpots >= 10) {
+        if (path && path[0] != '\0' && numSpots <= m_numSpots && numSpots > 0) {
             m_numSpots = numSpots;
             m_path = ut.alcpy(path);
             for (int i = 0; i < MAX_PARKING_SPOTS; i++)
@@ -70,7 +89,8 @@ namespace sdds {
         return m_path == nullptr;
     }
     void Parking::status() const {
-        cout << "****** Valet Parking ******" << endl;
+        clrscr();
+        cout << "********* Valet Parking **********" << endl;
         cout << "*****  Available spots: ";
         cout.setf(ios::left);
         cout << setw(5) << m_numSpots - m_numParked << "*****" << endl;
@@ -80,11 +100,12 @@ namespace sdds {
     void Parking::parkVehicle(Vehicle* V, int loc) {
         V->setCsv(false);
         cout << endl;
-        V->read();
+        cin >> *V;
         V->setParkingSpot(loc + 1);
-        cout << endl << "Parking Ticket" << endl;
-        V->write(cout);
-        cout << endl;
+        cout << endl << "Parking Ticket:" << endl;
+        cout << "---------------" << endl;
+        cout << *V;
+        cout << endl << endl;
         m_numParked++;
     }
     // park a vehicle using the sub-menu for car or motorcycle
@@ -101,9 +122,10 @@ namespace sdds {
             } else if (selection == 2) {
                 m_vehicles[spotFound] = new Motorcycle;
                 parkVehicle(m_vehicles[spotFound], spotFound);
-            } else cout << "Parking cancelled";
-            cout << endl;
-        } else cout << "Parking is full" << endl << endl;
+            }
+        } else {
+            cout << "Parking lot is full!\nTry Returning a Vehicle " << endl << endl;
+        }
         pause();
     }
     // based on a licence plate - find a parked vehicle
@@ -120,50 +142,65 @@ namespace sdds {
         }
         for (int i = 0; i < m_numSpots && loc == -1; i++)
             if (m_vehicles[i])
-                if (m_vehicles[i]->operator==(plate))
+                if (*m_vehicles[i] == plate)
                     loc = i;
         if (loc == -1) {
-            cout << endl << "Licence plate ";
+            cout << endl << "Licence plate \'";
             ut.toUpper(plate, cout);
-            cout << " Not found" << endl << endl;
+            cout << "\' Not found!" << endl << endl;
         } else {
             cout << endl << heading << endl;
+            cout << "---------------" << endl;
             m_vehicles[loc]->setCsv(false);
-            m_vehicles[loc]->write();
+            cout << *m_vehicles[loc];
             cout << endl << endl;
         }
         delete[] plate;
-        pause();
         return loc;
     }
     void Parking::pause() {
-        cout << "Press <ENTER> to continue....";
+        cout << "Press <ENTER> to continue...\nThis will clear the screen and return to the menu!";
         cin.ignore(1000, '\n');
     }
     // remove a veichle from the lot
     void Parking::returnV() {
-        cout << "Return Vehicle" << endl;
+        cout << "Return Vehicle:" << endl;
+        cout << "---------------" << endl;
         int index = findVehicle("Returning:");
         if (index != -1) {
             delete m_vehicles[index];
             m_vehicles[index] = nullptr;
             m_numParked--;
         }
+        pause();
     }
     // find a specific vehicle
     void Parking::find() {
         cout << "Vehicle Search" << endl;
-        findVehicle("Vehicle found:");
+        findVehicle("Vehicle found: ");
+        pause();
     }
     // show vehicles in the lot
     void Parking::list() {
-        cout << "*** List of parked vehicles ***" << endl;
-        for (int i = 0; i < m_numSpots; i++)
-            if (m_vehicles[i]) {
-                m_vehicles[i]->setCsv(false);
-                m_vehicles[i]->write(cout) << endl;
-                cout << "-------------------------------" << endl;
-            }
+        if (m_numParked) {
+            cout << endl << "-------------------------------" << endl;
+            cout << "*** List of parked vehicles ***" << endl;
+            cout << "-------------------------------" << endl;
+            for (int i = 0; i < m_numSpots; i++)
+                if (m_vehicles[i]) {
+                    m_vehicles[i]->setCsv(false);
+                    //m_vehicles[i]->write(cout) << endl;
+                    cout << *m_vehicles[i] << endl;;
+                    cout << "-------------------------------" << endl;
+                }
+            cout << "********  End of List  ********" << endl;
+            cout << "-------------------------------" << endl;
+        } else {
+            cout << endl << "-------------------------------" << endl;
+            cout << "No vehicles are parked!" << endl << endl;
+            cout << "-------------------------------" << endl;
+        }
+        cout << endl;
         pause();
     }
     // close for the day and tow all vehicles from lot
@@ -173,7 +210,7 @@ namespace sdds {
             cout << "Closing Parking" << endl;
             res = true;
         } else {
-            cout << "This will Remove and tow all remaining Vehicles from the Parking!!"
+            cout << "This will Remove and tow all remaining vehicles from the parking!"
                 << endl;
             cout << "Are you sure? (Y)es/(N)o: ";
             if (ut.getYN(cin)) {
@@ -184,10 +221,14 @@ namespace sdds {
                         cout << endl << "Towing request" <<
                             endl << "*********************" << endl;
                         m_vehicles[i]->setCsv(false);
-                        m_vehicles[i]->write() << endl;
+                        cout << *m_vehicles[i] << endl;
                         delete m_vehicles[i];
                         m_vehicles[i] = nullptr;
                     }
+            } else {
+                cout << "\nReturning to menu..." << endl;
+                cout << "--------------------" << endl;
+                pause();
             }
             saveData();
         }
@@ -196,18 +237,26 @@ namespace sdds {
     // closes the app and saves data 
     bool Parking::exitApp() {
         bool res = false;
-        cout << "This will terminate the program!!" << endl;
+        cout << "This will terminate the program!" << endl;
         cout << "Are you sure? (Y)es/(N)o: ";
         if (ut.getYN(cin)) {
             res = true;
-            cout << "Exiting program!" << endl;
+            cout << "\nExiting program" << endl;
+            cout << "And Saving Data" << endl;
+            cout << "---------------" << endl;
             saveData();
+        } else {
+            cout << "\nReturning to menu..." << endl;
+            cout << "--------------------" << endl;
+            pause();
         }
         return res;
     }
     // make sure there is no memory leaks
     Parking::~Parking() {
+        // delete the filename/path
         delete[] m_path;
+        // delete all the cars from Vehicle pointer array
         for (int i = 0; i < m_numSpots; i++)
             delete m_vehicles[i];
     }
@@ -220,15 +269,15 @@ namespace sdds {
         ifstream fin(m_path);
         while (ok && m_numParked < m_numSpots) {
             fin.get(ch);
-            if (!fin.eof()) {
+            if (!fin.eof()) { // dont do enything file is empty or at EOF
                 V = nullptr;
                 if (ch == 'C' || ch == 'c') V = new Car;
                 else if (ch == 'M' || ch == 'm') V = new Motorcycle;
-                else res = false;
-                fin.ignore(); // ignore , after writeType
+                else res = false; // only happens if trying to read an invalid file
+                fin.ignore(); // ignore , after type of V
                 if (res) {
                     V->setCsv(true);
-                    V->read(fin);
+                    fin >> *V;
                     m_vehicles[V->getParkingSpot() - 1] = V;
                     m_numParked++;
                 }

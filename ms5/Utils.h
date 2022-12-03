@@ -31,8 +31,13 @@ namespace sdds {
         char* getDynCstr(const char* prompt = nullptr);
         // my functions - see Utils.cpp for more details
         int getInt(int low, int high);
-        bool getYN(std::istream& is);
-        int getStr(char* str, bool upper, std::istream& is);
+        bool getYN(std::istream& is = std::cin);
+        int getStr(char* str, bool upper, std::istream& is = std::cin);
+        std::string trim(const std::string& str,
+            const std::string& whitespace = " \t");
+        std::string reduce(const std::string& str,
+            const std::string& fill = " ",
+            const std::string& whitespace = " \t");
         int stricmp(const char* s1, const char* s2);
         std::ostream& toUpper(const char* srt, std::ostream& os);
     };

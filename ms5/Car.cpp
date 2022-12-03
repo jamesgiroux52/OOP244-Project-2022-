@@ -45,7 +45,7 @@ namespace sdds {
     // makes sure to retain the vehicle information
     Car& Car::operator=(const Car& C) {
         if (this != &C) {
-            Vehicle::operator=(C); // here
+            Vehicle::operator=(C); // Vekicle retains car info
             m_valid = true;
         } else m_valid = false;
         return *this;
